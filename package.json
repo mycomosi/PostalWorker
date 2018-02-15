@@ -1,0 +1,23 @@
+{
+  "name": "PostalWorker2",
+  "version": "2.0.0",
+  "description": "",
+  "main": "dist/PostalWorker.js",
+  "files": [
+    "dist/PostalWorker.js"
+  ],
+  "scripts": {
+    "build": "rollup -c rollup.es.config.js && rollup -c rollup.min.config.js",
+    "build-worker": "rollup -c rollup.worker.config.js"
+  },
+  "devDependencies": {
+    "rollup": "^0.52.0",
+    "rollup-plugin-babel": "^2.7.1",
+    "rollup-plugin-commonjs": "^7.0.0",
+    "rollup-plugin-json": "^2.3.0",
+    "rollup-plugin-multi-entry": "^2.0.2",
+    "rollup-plugin-node-resolve": "2.0.0",
+    "rollup-plugin-replace": "^1.2.1",
+    "rollup-plugin-uglify-es": "0.0.1"
+  }
+}

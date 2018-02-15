@@ -1,0 +1,6 @@
+.idea/**
+dist/**
+*.bat
+*.war
+npm-debug.log
+/node_modules
