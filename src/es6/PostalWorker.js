@@ -137,7 +137,6 @@ export class PostalWorker {
             window.console.warn('PostalWorker - Unable to start SharedWorker - Reverting to dedicated worker');
             window.console.debug(e);
         }
-        console.info(worker);
         return (worker) ? worker : false;
     }
 
