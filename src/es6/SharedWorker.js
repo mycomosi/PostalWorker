@@ -6,7 +6,7 @@
 
 import * as S from './strings';
 
-let postalSharedWorker = {
+postalSharedWorker = {
     ports: [],
     subscriptions: [],
     events: [],

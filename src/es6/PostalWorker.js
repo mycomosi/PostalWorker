@@ -104,7 +104,6 @@ export class PostalWorker {
             route = this._getPostalRoute();
         try {
             worker = new SharedWorker(route.concat(S.POSTAL_SHARED_WORKER).concat('.').concat(S.JS), S.POSTAL_WORKER);
-
             worker.port.onmessage = (event) => {
 
                 let OK = JSON.stringify({type: S.RESPONSE, status: true});
@@ -138,6 +137,7 @@ export class PostalWorker {
             window.console.warn('PostalWorker - Unable to start SharedWorker - Reverting to dedicated worker');
             window.console.debug(e);
         }
+        console.info(worker);
         return (worker) ? worker : false;
     }
 
@@ -170,14 +170,20 @@ export class PostalWorker {
         if (script.length>1) {
             window.console.warn('PostalWorker - Discovered more than 1 script tag matching "PostalWorker"');
         }
-        return (_config.PostalRoute) || (script.length === 1) ? script[0].src
+        if (_config.PostalRoute) {
+            return _config.PostalRoute;
+        }
+        else {
+            return (script.length === 1) ? script[0].src
 
-            // minified version
-            .replace(/PostalWorker\.min\.js.*$/, '')
-                
-            // full version 
-            .replace(/PostalWorker\.js.*$/, '') :
-            '';
+                // minified version
+                    .replace(/PostalWorker\.min\.js.*$/, '')
+
+                    // full version
+                    .replace(/PostalWorker\.js.*$/, '') :
+                '';
+        }
+
     }
 
     /**
