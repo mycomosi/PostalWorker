@@ -56,7 +56,7 @@ export class PostalWorker {
      * @return {*}
      * @private
      */
-    _getSubscriber(url) {
+    static _getSubscriber(url) {
 
         let splt = url.split('://'),
             protocol = splt[0],
@@ -91,6 +91,8 @@ export class PostalWorker {
             _worker = this._startDedicatedWorker();
         }
 
+        return _worker;
+
     }
 
     /**
@@ -102,6 +104,7 @@ export class PostalWorker {
 
         let worker,
             route = this._getPostalRoute();
+
         try {
             worker = new SharedWorker(route.concat(S.POSTAL_SHARED_WORKER).concat('.').concat(S.JS), S.POSTAL_WORKER);
             worker.port.onmessage = (event) => {
@@ -144,7 +147,7 @@ export class PostalWorker {
      * Start a basic web worker (not available at this time)
      * @private
      */
-    _startDedicatedWorker() {
+    static _startDedicatedWorker() {
         window.console.info('_startDedicatedWorker (not complete)');
     }
 
@@ -190,7 +193,7 @@ export class PostalWorker {
      * @param e
      * @private
      */
-    _messageController(e) {
+    static _messageController(e) {
         
         let msg = JSON.parse(e.data);
 

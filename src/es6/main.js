@@ -7,8 +7,11 @@
 
 import {PostalWorker} from './PostalWorker';
 
+let _PostalWorker;
 export default function (configuration) {
-
-    return new PostalWorker(configuration);
-    
+    if (!_PostalWorker) {
+        _PostalWorker = new PostalWorker(configuration);
+        return _PostalWorker;
+    }
+    else return _PostalWorker;
 }
