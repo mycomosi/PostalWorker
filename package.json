@@ -2,7 +2,8 @@
   "name": "postalworker",
   "version": "2.0.0",
   "description": "A JavaScript WebWorker & postMessage library that connects UI elements, Web Workers, & Cross-Site Windows",
-  "main": "dist/PostalWorker.js",
+  "main": "index.js",
+  "module": "dist/PostalWorker.es.js",
   "files": [
     "dist/PostalWorker.es.js",
     "dist/PostalWorker.min.js",
