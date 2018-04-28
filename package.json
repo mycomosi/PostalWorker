@@ -34,7 +34,7 @@
     "eventbus"
   ],
   "author": "Russ Stratfull <russ.stratfull@mycom-osi.com> (http://russandsonya.com/russ)",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/mycomosi/PostalWorker/issues"
   },
