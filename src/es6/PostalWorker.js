@@ -241,16 +241,8 @@ export class PostalWorker {
                 // Regular backfire
                 else {
                     if (_crossEvents.has(msg.data.msgClass)) {
-
                         // Invoke registered callback
                         _crossEvents.get(msg.data.msgClass)(msg.data.message);
-
-                        // ???
-                        // for (let cross of _crossEvents) {
-                        //
-                        //     // Invoke callback
-                        //     cross(msg.data.message);
-                        // }
                     }
                 }
 
@@ -422,7 +414,7 @@ export class PostalWorker {
             }
             else {
                 // Registration failed, print out what happened to console
-                // todo: replace with custom logging to worker...
+                // todo: replace with custom logging to worker...?
                 window.console.warn('PostalWorker - Unable to crossOn request');
                 window.console.debug({
                     msgClass: msgClass,
