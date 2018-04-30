@@ -63,8 +63,20 @@ postalSharedWorker = {
                 // case S.AJAX:
                 //     break;
                 // todo...
-                // case S.LOAD:
-                //     break;
+                case S.LOAD:
+
+                    // Wrap importScripts in try catch to report errors back to the main window
+                    // Attemp to load requested library
+                    try {
+                        importScripts(msg.data);
+                    }
+                    catch(e) {
+                        event.currentTarget.postMessage({
+                            type: 'ERROR',
+                            data: `PostalWorkerWorker Error: Unable to load file ${msg.data}`
+                        });
+                    }
+                    break;
             }
         }
     },
