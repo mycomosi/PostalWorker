@@ -6,6 +6,21 @@
 
 import * as S from './strings';
 
+function uniqueNumber() {
+    var date = Date.now();
+
+    if (date <= uniqueNumber.previous) {
+        date = ++uniqueNumber.previous;
+    } else {
+        uniqueNumber.previous = date;
+    }
+
+    return date;
+}
+
+uniqueNumber.previous = 0;
+
+
 postalSharedWorker = {
     ports: [],
     events: new Map(),
@@ -218,7 +233,7 @@ onconnect = (event) => {
 
     let src = event.source,
         port = {
-            address: btoa(Date.now()),
+            address: uniqueNumber(),
             session: src,
             tries: 10
         };
