@@ -5,7 +5,6 @@
  */
 
 import * as S from './strings';
-
 function uniqueNumber() {
     var date = Date.now();
 
@@ -17,14 +16,13 @@ function uniqueNumber() {
 
     return date;
 }
-
 uniqueNumber.previous = 0;
-
 
 postalSharedWorker = {
     ports: [],
     events: new Map(),
-
+    scripts: new Set(),
+    addresses: new Set(),
     /**
      *
      * @param msgClass
@@ -88,39 +86,17 @@ postalSharedWorker = {
                     // Broadcast to windows/tabs
                     range = msg.data.audience || S.ALL; // public, private, ALL todo: direct port messaging...
                     postalSharedWorker._postMessenger(S.FIRE, range, msg.data, port);
-
-                    // if (postalSharedWorker.events[msg.data.msgClass] !== undefined) {
-                    //
-                    //     // Loop through registered callbacks/events
-                    //     for (let evt of postalSharedWorker.events) {
-                    //         // Invoke callback
-                    //         evt(msg.data.message);
-                    //     }
-                    // }
-
-                    // Determine which port index this is
-                    // for (var p = ports.length; p--;) {
-                    //     if (ports[p].session === event.currentTarget) {
-                    //         idx = p;
-                    //     }
-                    // }
-
-                    // var write = '[' + idx + '] ' + stamp + ' ' + level + ' ' + entry;
-
-
-
                     if (postalSharedWorker.events.has(msg.data.msgClass)) {
                         postalSharedWorker.events.forEach(evt => {
-
-                            let src = false, idx = 1;
+                            let address,
+                                index;
                             for (let p of postalSharedWorker.ports) {
                                 if (p.session === event.currentTarget) {
-                                    src = idx;
+                                    address = p.address;
+                                    index = postalSharedWorker.ports.indexOf(p);
                                 }
-                                idx++;
                             }
-
-                            evt(msg.data.message, port);
+                            evt(msg.data.message, {index: index, address: address});
                         });
                     }
                     break;
@@ -132,10 +108,14 @@ postalSharedWorker = {
                 // todo...
                 case S.LOAD:
 
+                    if (postalSharedWorker.scripts.has(msg.data)) {
+                        return;
+                    }
                     // Wrap importScripts in try catch to report errors back to the main window
                     // Attemp to load requested library
                     try {
                         importScripts(msg.data);
+                        postalSharedWorker.scripts.add(msg.data);
                     }
                     catch(e) {
                         event.currentTarget.postMessage({
@@ -144,7 +124,6 @@ postalSharedWorker = {
                         });
                     }
                     break;
-                    break;
 
                 case S.SET_ADDRESS: {
                     for (let p of postalSharedWorker.ports) {
@@ -152,6 +131,11 @@ postalSharedWorker = {
                             p.address = msg.data;
                         }
                     }
+                    let addressChange = {
+                        type: S.SET_ADDRESS,
+                        data: msg.data
+                    };
+                    event.currentTarget.postMessage(addressChange);
                 }
             }
         }
@@ -204,7 +188,7 @@ postalSharedWorker = {
                 // Remove entries that don't have any tries left
                 postalSharedWorker.ports = postalSharedWorker.ports.filter(pr => pr.tries > 0);
                 break;
-                
+
             default: // ALL
                 // Fallback to older version support in case of no scope being defined
                 for (let p of postalSharedWorker.ports) {
@@ -231,9 +215,10 @@ postalSharedWorker = {
  */
 onconnect = (event) => {
 
+    let address = uniqueNumber();
     let src = event.source,
         port = {
-            address: uniqueNumber(),
+            address: address,
             session: src,
             tries: 10
         };
@@ -242,4 +227,10 @@ onconnect = (event) => {
     src.addEventListener(S.MESSAGE, (event) => {
         postalSharedWorker._processMessage(event, src, postalSharedWorker.ports);
     });
+    let startup = {
+        type: S.SET_ADDRESS,
+        data: address
+    };
+    src.postMessage(startup);
+
 };

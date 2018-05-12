@@ -8,6 +8,7 @@ import * as S from './strings';
 import safeJsonStringify from "safe-json-stringify";
 
 let // Private registrations
+    _address = null,
     _config = false,
     _worker = false,
     _parentWindow = false,
@@ -127,6 +128,11 @@ export class PostalWorker {
                         event.currentTarget.postMessage(OK);
 
                         break;
+
+                    case S.SET_ADDRESS: {
+                        _address = event.data.data;
+                        break;
+                    }
 
                     case S.ERROR:
                         console.error(event.data.data);
@@ -572,6 +578,10 @@ export class PostalWorker {
                 data: name
             }))
         }
+    }
+
+    getAddress() {
+        return _address;
     }
 
 }
