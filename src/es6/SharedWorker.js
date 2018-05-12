@@ -6,18 +6,46 @@
 
 import * as S from './strings';
 
+
+
 postalSharedWorker = {
     ports: [],
-    subscriptions: [],
-    events: [],
+    events: new Map(),
+
+    /**
+     *
+     * @param msgClass
+     * @param action
+     */
+    on: (msgClass, action) => {
+        postalSharedWorker.events.set(msgClass, action);
+    },
+
+    /**
+     *
+     * @param msgClass
+     */
+    un: (msgClass) => {
+        postalSharedWorker.events.delete(msgClass);
+    },
+
+    /**
+     *
+     * @param msgClass
+     * @param msg
+     */
+    fire: (msgClass, msg) => {
+
+    },
 
     /**
      * Process message events
      * @param event
      * @param port
      * @param ports
+     * @private
      */
-    processMessage: (event, port, ports) => {
+    _processMessage: (event, port, ports) => {
 
         if (event.data && event.type) {
 
@@ -46,15 +74,20 @@ postalSharedWorker = {
 
                     // Broadcast to windows/tabs
                     range = msg.data.audience || S.ALL; // public, private, ALL todo: direct port messaging...
-                    postalSharedWorker.postMessenger(S.FIRE, range, msg.data, port);
+                    postalSharedWorker._postMessenger(S.FIRE, range, msg.data, port);
 
-                    if (postalSharedWorker.events[msg.data.msgClass] !== undefined) {
-
-                        // Loop through registered callbacks/events
-                        for (let evt of postalSharedWorker.events) {
-                            // Invoke callback
+                    // if (postalSharedWorker.events[msg.data.msgClass] !== undefined) {
+                    //
+                    //     // Loop through registered callbacks/events
+                    //     for (let evt of postalSharedWorker.events) {
+                    //         // Invoke callback
+                    //         evt(msg.data.message);
+                    //     }
+                    // }
+                    if (postalSharedWorker.events.has(msg.data.msgClass)) {
+                        postalSharedWorker.forEach(evt => {
                             evt(msg.data.message);
-                        }
+                        });
                     }
                     break;
 
@@ -94,8 +127,9 @@ postalSharedWorker = {
      * @param audience
      * @param msg
      * @param port
+     * @private
      */
-    postMessenger: (type, audience, msg, port) => {
+    _postMessenger: (type, audience, msg, port) => {
 
         let notification;
 
@@ -162,6 +196,6 @@ onconnect = (event) => {
     postalSharedWorker.ports.push(port);
     src.start();
     src.addEventListener(S.MESSAGE, (event) => {
-        postalSharedWorker.processMessage(event, src, postalSharedWorker.ports);
+        postalSharedWorker._processMessage(event, src, postalSharedWorker.ports);
     });
 };
