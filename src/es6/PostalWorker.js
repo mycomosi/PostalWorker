@@ -561,6 +561,19 @@ export class PostalWorker {
         }
     }
 
+    /**
+     * Set postal address with worker
+     * @param name
+     */
+    setAddress(name) {
+        if (_worker) {
+            _worker.port.postMessage(safeJsonStringify({
+                type: S.SET_ADDRESS,
+                data: name
+            }))
+        }
+    }
+
 }
 
 

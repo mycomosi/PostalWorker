@@ -6,8 +6,6 @@
 
 import * as S from './strings';
 
-
-
 postalSharedWorker = {
     ports: [],
     events: new Map(),
@@ -84,9 +82,30 @@ postalSharedWorker = {
                     //         evt(msg.data.message);
                     //     }
                     // }
+
+                    // Determine which port index this is
+                    // for (var p = ports.length; p--;) {
+                    //     if (ports[p].session === event.currentTarget) {
+                    //         idx = p;
+                    //     }
+                    // }
+
+                    // var write = '[' + idx + '] ' + stamp + ' ' + level + ' ' + entry;
+
+
+
                     if (postalSharedWorker.events.has(msg.data.msgClass)) {
-                        postalSharedWorker.forEach(evt => {
-                            evt(msg.data.message);
+                        postalSharedWorker.events.forEach(evt => {
+
+                            let src = false, idx = 1;
+                            for (let p of postalSharedWorker.ports) {
+                                if (p.session === event.currentTarget) {
+                                    src = idx;
+                                }
+                                idx++;
+                            }
+
+                            evt(msg.data.message, port);
                         });
                     }
                     break;
@@ -110,6 +129,15 @@ postalSharedWorker = {
                         });
                     }
                     break;
+                    break;
+
+                case S.SET_ADDRESS: {
+                    for (let p of postalSharedWorker.ports) {
+                        if (p.session === event.currentTarget) {
+                            p.address = msg.data;
+                        }
+                    }
+                }
             }
         }
     },
@@ -190,6 +218,7 @@ onconnect = (event) => {
 
     let src = event.source,
         port = {
+            address: btoa(Date.now()),
             session: src,
             tries: 10
         };

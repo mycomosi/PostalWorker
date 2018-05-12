@@ -26,6 +26,7 @@ export const // All the strings...
     LOAD = 'LOAD',
     RESPONSE = 'RESPONSE',
     STATUS = 'STATUS',
+    SET_ADDRESS = 'SET_ADDRESS',
 
     // Random things
     _BLANK = '_blank';
