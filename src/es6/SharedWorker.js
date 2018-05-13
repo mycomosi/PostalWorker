@@ -140,13 +140,6 @@ postalSharedWorker = {
             }
         }
     },
-    // todo...
-    // on: (msgClass, action) => {
-    //
-    // },
-    // fire: (msgClass, msg) => {
-    //
-    // },
 
     /**
      * The messenger method used to post messages to the windows

@@ -49,8 +49,6 @@ export class PostalWorker {
         this._resolveWorker();
     }
 
-
-
     /**
      * Get root URL for subscriptions
      * (postMessage treats ALL urls the same off the same root)
@@ -71,7 +69,6 @@ export class PostalWorker {
             return url;
         }
     }
-
 
     /**
      * Resolve what type of worker threading is available
@@ -269,7 +266,6 @@ export class PostalWorker {
         }
 
     };
-
 
     /**
      * Register in the worker thread for events
@@ -568,7 +564,7 @@ export class PostalWorker {
     }
 
     /**
-     * Set postal address with worker
+     * Set postal address with worker postal system
      * @param name
      */
     setAddress(name) {
@@ -580,6 +576,10 @@ export class PostalWorker {
         }
     }
 
+    /**
+     * Get current address that is registered with postal system
+     * @return {*}
+     */
     getAddress() {
         return _address;
     }
