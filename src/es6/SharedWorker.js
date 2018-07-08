@@ -86,18 +86,21 @@ postalSharedWorker = {
                     // Broadcast to windows/tabs
                     range = msg.data.audience || S.ALL; // public, private, ALL todo: direct port messaging...
                     postalSharedWorker._postMessenger(S.FIRE, range, msg.data, port);
+
+                    // Invoke registered event on this thread
                     if (postalSharedWorker.events.has(msg.data.msgClass)) {
-                        postalSharedWorker.events.forEach(evt => {
-                            let address,
-                                index;
-                            for (let p of postalSharedWorker.ports) {
-                                if (p.session === event.currentTarget) {
-                                    address = p.address;
-                                    index = postalSharedWorker.ports.indexOf(p);
-                                }
+                        let address,
+                            index;
+                        for (let p of postalSharedWorker.ports) {
+                            if (p.session === event.currentTarget) {
+                                address = p.address;
+                                index = postalSharedWorker.ports.indexOf(p);
                             }
-                            evt(msg.data.message, {index: index, address: address});
-                        });
+                        }
+                        postalSharedWorker.events.get(msg.data.msgClass)(
+                            msg.data.message,
+                            {index: index, address: address}
+                        );
                     }
                     break;
 
@@ -194,8 +197,8 @@ postalSharedWorker = {
                     p.session.postMessage(notification);
                 }
 
-            // Remove entries that don't have any tries left
-            postalSharedWorker.ports = postalSharedWorker.ports.filter(pr => pr.tries > 0);
+                // Remove entries that don't have any tries left
+                postalSharedWorker.ports = postalSharedWorker.ports.filter(pr => pr.tries > 0);
         }
 
     }
