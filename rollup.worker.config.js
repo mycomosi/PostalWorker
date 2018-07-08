@@ -8,8 +8,8 @@ export default {
     input: 'src/es6/SharedWorker.js',
     name: 'Worker',
     output: {
-        // file: 'dist/PostalSharedWorker.js',
-        file: '../entourage/demo/lib/PostalSharedWorker.js',
+        file: 'dist/PostalSharedWorker.js',
+        // file: '../entourage/demo/lib/PostalSharedWorker.js',
         format: 'es',
         sourcemap: false,
         onwarn: (message) => {
