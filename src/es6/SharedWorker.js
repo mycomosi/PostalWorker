@@ -44,9 +44,20 @@ postalSharedWorker = {
      *
      * @param msgClass
      * @param msg
+     * @param audience
+     * @param target
      */
-    fire: (msgClass, msg) => {
-
+    fire: (msgClass, msg, audience, target) => {
+        postalSharedWorker._postMessenger(
+            S.FIRE,
+            audience,
+            {
+                msgClass: msgClass,
+                message: msg,
+                audience: audience
+            },
+            target
+        );
     },
 
     /**
