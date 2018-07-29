@@ -5,7 +5,6 @@
  */
 
 import * as S from './strings';
-import safeJsonStringify from "safe-json-stringify";
 
 let // Private registrations
     _address = null,
@@ -30,13 +29,14 @@ export class PostalWorker {
      * Initialize object with configuration & setup the worker and listeners
      * @param configuration
      */
-    constructor(configuration) {
+    constructor(configuration, safeJsonStringify) {
 
         _config = configuration || false;
+        this.safeJsonStringify = safeJsonStringify;
 
         // Does this window have a parent?
         if (window.self !== window.top) {
-            
+
             // If it does, register it and let it know this window is ready to receive messages
             _parentWindow = this._getSubscriber(document.referrer);
             this.backFire(S.CHILDREGISTER);
@@ -77,7 +77,9 @@ export class PostalWorker {
     _resolveWorker() {
 
         // Browser supports SharedWorker
-        if (!!window.SharedWorker) {
+        let sh = !!window.SharedWorker;
+        sh = Boolean(sh);
+        if (sh) {
             _worker = this._startSharedWorker();
             if (!_worker) {
                 // Fallback on failure
@@ -108,7 +110,7 @@ export class PostalWorker {
             worker = new SharedWorker(route.concat(S.POSTAL_SHARED_WORKER).concat('.').concat(S.JS), S.POSTAL_WORKER);
             worker.port.onmessage = (event) => {
 
-                let OK = safeJsonStringify({type: S.RESPONSE, status: true});
+                let OK = this.safeJsonStringify({type: S.RESPONSE, status: true});
 
                 // Handle messages sent from worker by type
                 switch (event.data.type) {
@@ -198,7 +200,7 @@ export class PostalWorker {
      * @private
      */
     static _messageController(e) {
-        
+
         let msg = JSON.parse(e.data);
 
         switch (msg.type) {
@@ -265,7 +267,7 @@ export class PostalWorker {
                 });
         }
 
-    };
+    }
 
     /**
      * Register in the worker thread for events
@@ -278,7 +280,7 @@ export class PostalWorker {
         if (msgClass && action) {
 
             // Send message to worker thread
-            let msg_ = safeJsonStringify({
+            let msg_ = this.safeJsonStringify({
                 type: S.ON,
                 data: {
                     msgClass: msgClass,
@@ -302,7 +304,7 @@ export class PostalWorker {
     un(msgClass) {
 
         // Send message to worker thread
-        let msg_ = safeJsonStringify({
+        let msg_ = this.safeJsonStringify({
             type: S.UN,
             data: msgClass
         });
@@ -324,7 +326,7 @@ export class PostalWorker {
      */
     fire(msgClass, msg, audience) {
 
-        let msg_ = safeJsonStringify({
+        let msg_ = this.safeJsonStringify({
             type: S.FIRE,
             data: {
                 msgClass: msgClass,
@@ -386,7 +388,7 @@ export class PostalWorker {
                     if (windowparams.height) params.concat(`, height=${windowparams.height}`);
                     if (windowparams.width) params.concat(`, width=${windowparams.width}`);
                     if (windowparams.resizable) params.concat(`, resizable=${windowparams.resizable ? S.YES : S.NO}`);
-                    if (windowparams.scrollbars) param.concat(`, scrollbars=${windowparams.scrollbars ? S.YES : S.NO}`);
+                    if (windowparams.scrollbars) params.concat(`, scrollbars=${windowparams.scrollbars ? S.YES : S.NO}`);
                     if (windowparams.menubar) params.concat(`, menubar=${windowparams.menubar ? S.YES : S.NO}`);
                     if (windowparams.toolbar) params.concat(`, toolbar=${windowparams.toolbar ? S.YES : S.NO}`);
 
@@ -469,7 +471,7 @@ export class PostalWorker {
      */
     crossFire(msgClass, msg) {
 
-        let msg_ = safeJsonStringify({
+        let msg_ = this.safeJsonStringify({
             type: S.CROSSFIRE,
             data: {
                 msgClass: msgClass,
@@ -518,7 +520,7 @@ export class PostalWorker {
 
         if (_parentWindow && msgClass) {
 
-            let msg_ = safeJsonStringify({
+            let msg_ = this.safeJsonStringify({
                 type: S.BACKFIRE,
                 data: {
                     msgClass: msgClass,
@@ -556,7 +558,7 @@ export class PostalWorker {
     load(library) {
         // if (_worker) _worker.port.postMessage(msg_);
         if (_worker) {
-            _worker.port.postMessage(safeJsonStringify({
+            _worker.port.postMessage(this.safeJsonStringify({
                 type: S.LOAD,
                 data: library
             }));
@@ -569,10 +571,10 @@ export class PostalWorker {
      */
     setAddress(name) {
         if (_worker) {
-            _worker.port.postMessage(safeJsonStringify({
+            _worker.port.postMessage(this.safeJsonStringify({
                 type: S.SET_ADDRESS,
                 data: name
-            }))
+            }));
         }
     }
 

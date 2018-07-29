@@ -11,24 +11,48 @@
   ],
   "scripts": {
     "build": "rollup -c rollup.es.config.js && rollup -c rollup.min.config.js",
-    "build-worker": "rollup -c rollup.worker.config.js"
+    "build-worker": "rollup -c rollup.worker.config.js",
+    "_transpile-test": "rollup -c rollup.test.js",
+    "test": "npm run _transpile-test && mocha",
+    "coverage": "cross-env NODE_ENV=test nyc npm test",
+    "doc": "jsdoc -c jsdoc.json"
   },
   "devDependencies": {
+    "babel-plugin-istanbul": "^4.0.0",
+    "babel-preset-es2015-rollup": "^3.0.0",
+    "babelrc-rollup": "^3.0.0",
+    "chai": "^3.5.0",
+    "cross-env": "^3.1.4",
+    "docdash": "^0.4.0",
+    "jsdoc": "^3.5.5",
+    "mocha": "^5.2.0",
+    "nyc": "^13.0.1",
     "rollup": "^0.52.0",
     "rollup-plugin-babel": "^2.7.1",
     "rollup-plugin-commonjs": "^7.0.0",
+    "rollup-plugin-eslint": "^3.0.0",
     "rollup-plugin-json": "^2.3.0",
     "rollup-plugin-multi-entry": "^2.0.2",
     "rollup-plugin-node-resolve": "2.0.0",
     "rollup-plugin-replace": "^1.2.1",
-    "rollup-plugin-uglify-es": "0.0.1"
+    "rollup-plugin-uglify-es": "0.0.1",
+    "sinon": "^1.17.7",
+    "sinon-chai": "^2.8.0"
   },
   "dependencies": {
+    "css-element-queries": "^0.4.0",
+    "lodash-es": "^4.17.4",
     "safe-json-stringify": "^1.1.0"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mycomosi/PostalWorker.git"
+  },
+  "nyc": {
+    "reporter": [
+      "text",
+      "html"
+    ]
   },
   "keywords": [
     "postMessage",

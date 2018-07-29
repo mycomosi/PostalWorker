@@ -1,6 +1,10 @@
 .idea/**
 dist/**
 *.bat
-*.war
 npm-debug.log
 /node_modules
+/target
+/test/transpiled
+dev/**
+/.nyc_output
+/coverage

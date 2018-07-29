@@ -6,10 +6,12 @@
 
 
 import {PostalWorker} from './PostalWorker';
+import safeJsonStringify from "safe-json-stringify";
+
 let _PostalWorker;
 window.PostalWorker = () => {
     if (!_PostalWorker) {
-        _PostalWorker = new PostalWorker();
+        _PostalWorker = new PostalWorker({}, safeJsonStringify);
         return _PostalWorker;
     }
     else {

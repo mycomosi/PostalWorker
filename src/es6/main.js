@@ -6,11 +6,12 @@
 
 
 import {PostalWorker} from './PostalWorker';
+import safeJsonStringify from "safe-json-stringify";
 
 let _PostalWorker;
 export default function (configuration) {
     if (!_PostalWorker) {
-        _PostalWorker = new PostalWorker(configuration);
+        _PostalWorker = new PostalWorker(configuration, safeJsonStringify);
         return _PostalWorker;
     }
     else return _PostalWorker;
