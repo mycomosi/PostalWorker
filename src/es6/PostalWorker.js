@@ -28,6 +28,7 @@ export class PostalWorker {
     /**
      * Initialize object with configuration & setup the worker and listeners
      * @param configuration
+     * @param safeJsonStringify
      */
     constructor(configuration, safeJsonStringify) {
 
@@ -56,7 +57,7 @@ export class PostalWorker {
      * @return {*}
      * @private
      */
-    static _getSubscriber(url) {
+    _getSubscriber(url) {
 
         let splt = url.split('://'),
             protocol = splt[0],
@@ -153,7 +154,7 @@ export class PostalWorker {
      * Start a basic web worker (not available at this time)
      * @private
      */
-    static _startDedicatedWorker() {
+    _startDedicatedWorker() {
         window.console.info('_startDedicatedWorker (not complete)');
     }
 
@@ -199,7 +200,7 @@ export class PostalWorker {
      * @param e
      * @private
      */
-    static _messageController(e) {
+    _messageController(e) {
 
         let msg = JSON.parse(e.data);
 
@@ -481,7 +482,7 @@ export class PostalWorker {
 
         // Parent window is part of the crossFire group
         if (_parentWindow) {
-            top.postMessage(
+            window.top.postMessage(
                 msg_,
                 _parentWindow
             );
@@ -529,7 +530,7 @@ export class PostalWorker {
             });
 
             try {
-                top.postMessage(
+                window.top.postMessage(
                     msg_,
                     _parentWindow
                 );
