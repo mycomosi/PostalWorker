@@ -1,5 +1,5 @@
 /* eslint-env node, mocha */
-/* global expect sinon*/
+/* global sinon*/
 
 import {PostalWorker} from "../../src/es6/PostalWorker";
 

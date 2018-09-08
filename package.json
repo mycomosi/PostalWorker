@@ -15,7 +15,8 @@
     "_transpile-test": "rollup -c rollup.test.js",
     "test": "npm run _transpile-test && mocha",
     "coverage": "cross-env NODE_ENV=test nyc npm test",
-    "doc": "jsdoc -c jsdoc.json"
+    "doc": "jsdoc -c jsdoc.json",
+    "demo-multipleiframes": "rollup -c ./demos/multipleiframes/demo.multipleiframes.rollup.js"
   },
   "devDependencies": {
     "babel-plugin-istanbul": "^4.0.0",

@@ -50,7 +50,7 @@ const makeId = () => {
         let postal = window.PostalWorker(),
             demo = document.querySelector(`#${DEMO}`);
         postal.crossOn(IFRAME_MSG, (msg) => {
-            window.console.info(`Parent window: ${msg}`);
+            window.console.info(`- Parent window: ${msg}`);
         }, false);
 
         setTimeout(() => {

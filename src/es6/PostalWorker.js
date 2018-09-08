@@ -201,50 +201,42 @@ export class PostalWorker {
      * @private
      */
     _messageController(e) {
-
         let msg = JSON.parse(e.data);
-
         switch (msg.type) {
-
             case S.CROSSFIRE:
-
                 // Is this a parent we don't yet know about?
-                if (!_windows.has(e.origin)) {
-                    _windows.set(e.origin, e.source);
+                if (!_windows.has(e.source)) {
+                    _windows.set(e.source, e.origin);
                     _subscriptions.add(e.origin);
                 }
-
                 // Is this a cross event?
                 if (_crossEvents.has(msg.data.msgClass)) {
 
                     // If so, invoke registered callback against message
                     _crossEvents.get(msg.data.msgClass)(msg.data.message);
                 }
-
                 break;
 
             case S.BACKFIRE:
-
                 // Children register themselves with the parent
                 if (msg.data.msgClass === S.CHILDREGISTER) {
-
-                    if (!_windows.has(e.origin)) {
+                    if (!_windows.has(e.source)) {
                         _windows.set(
-                            e.origin,
-                            e.source
+                            e.source,
+                            e.origin
                         );
+                        _subscriptions.add(e.origin);
                     }
                     else {
                         // When a duplicate attempts to register, delete the previous resource
                         // This accounts for iframe reloading
-                        _windows.delete(e.origin);
+                        _windows.delete(e.source);
                         _windows.set(
-                            e.origin,
-                            e.source
+                            e.source,
+                            e.origin
                         );
                     }
                 }
-
                 // Regular backfire
                 else {
                     if (_crossEvents.has(msg.data.msgClass)) {
@@ -252,13 +244,11 @@ export class PostalWorker {
                         _crossEvents.get(msg.data.msgClass)(msg.data.message);
                     }
                 }
-
                 break;
 
             case S.ERROR:
                 window.console.error(msg.data.message);
                 break;
-
 
             default:
                 window.console.error('PostalWorker - Unexpected message event');
@@ -267,7 +257,6 @@ export class PostalWorker {
                     event: e
                 });
         }
-
     }
 
     /**
@@ -395,23 +384,23 @@ export class PostalWorker {
 
                     // Open window (with extra params)
                     _windows.set(
-                        rootSubscriber,
                         window.open(
                             subscriber,
                             winName,
                             params
-                        )
+                        ),
+                        rootSubscriber
                     );
                 }
                 else {
 
                     // Open window (basic)
                     _windows.set(
-                        rootSubscriber,
                         window.open(
                             subscriber,
                             winName
-                        )
+                        ),
+                        rootSubscriber
                     );
                 }
 
@@ -487,10 +476,11 @@ export class PostalWorker {
                 _parentWindow
             );
         }
-        // The rest of the crossFire group
-        if (_subscriptions.size>0) {
-            for (let sub of _subscriptions) {
-                _windows.get(sub).postMessage(
+
+        if (_windows.size>0) {
+            for (let [win, sub] of _windows) {
+
+                win.postMessage(
                     msg_,
                     sub
                 );
@@ -587,6 +577,41 @@ export class PostalWorker {
         return _address;
     }
 
+    /**
+     * Get current window references registered with postal system
+     * @return {Map<any, any>}
+     */
+    getWindows() {
+        return _windows;
+    }
+
+    /**
+     *
+     * @return {Map<any, any>}
+     */
+    getCrossEvents() {
+        return _crossEvents;
+    }
+
+    /**
+     *
+     * @return {Set<any>}
+     */
+    getSubscriptions() {
+        return _subscriptions;
+    }
+
+    /**
+     * @param subscriber
+     * @return {boolean | Array}
+     */
+    getWindowsBySubscriber(subscriber) {
+        let results = [];
+        for (let [w, s] of _windows) {
+            if (subscriber === s) { results.push(w);}
+        }
+        return results;
+    }
 }
 
 

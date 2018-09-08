@@ -11,6 +11,7 @@ export const // All the strings...
     CROSSFIRE = 'CROSSFIRE',
     BACKFIRE = 'BACKFIRE',
     CHILDREGISTER = 'CHILDREGISTER',
+    PARENTREGISTER = 'PARENTREGISTER',
     ERROR = 'ERROR',
     MESSAGE = 'message',
     YES = 'yes',
