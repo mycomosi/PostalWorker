@@ -612,6 +612,14 @@ export class PostalWorker {
         }
         return results;
     }
+
+    /**
+     *
+     * @return {Map<any, any>}
+     */
+    getEvents() {
+        return _events;
+    }
 }
 
 

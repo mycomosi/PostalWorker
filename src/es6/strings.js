@@ -29,5 +29,8 @@ export const // All the strings...
     STATUS = 'STATUS',
     SET_ADDRESS = 'SET_ADDRESS',
 
+    // SharedWorker stuff
+    REMOVE = 'remove',
+
     // Random things
     _BLANK = '_blank';

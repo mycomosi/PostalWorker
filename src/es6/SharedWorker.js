@@ -23,6 +23,8 @@ postalSharedWorker = {
     events: new Map(),
     scripts: new Set(),
     addresses: new Set(),
+    listeners: new Map(),
+
     /**
      *
      * @param msgClass
@@ -58,6 +60,18 @@ postalSharedWorker = {
             },
             target
         );
+    },
+
+    /**
+     * Listen for an event and execute the provided callback
+     * Events:
+     * remove - remove from messaging community/queue
+     *
+     * @param event
+     * @param callback
+     */
+    addListener: (event, callback) => {
+        postalSharedWorker.listeners.set(S.REMOVE, callback);
     },
 
     /**
@@ -101,16 +115,18 @@ postalSharedWorker = {
                     // Invoke registered event on this thread
                     if (postalSharedWorker.events.has(msg.data.msgClass)) {
                         let address,
-                            index;
+                            index,
+                            src;
                         for (let p of postalSharedWorker.ports) {
                             if (p.session === event.currentTarget) {
                                 address = p.address;
                                 index = postalSharedWorker.ports.indexOf(p);
+                                src = p.session;
                             }
                         }
                         postalSharedWorker.events.get(msg.data.msgClass)(
                             msg.data.message,
-                            {index: index, address: address}
+                            {index: index, address: address, src: src}
                         );
                     }
                     break;
@@ -152,6 +168,19 @@ postalSharedWorker = {
                     event.currentTarget.postMessage(addressChange);
                 }
             }
+        }
+    },
+
+    /**
+     * This function invokes a callback whenever a window is removed from the messaging queue
+     * To configure the worker to do this, use the "addListener" method and provide the event "remove"
+     * as the first argument
+     * @param removals
+     * @private
+     */
+    _invokeRemoveCallback: (removals) => {
+        for (let r of removals) {
+            postalSharedWorker.listeners.get(S.REMOVE)(r);
         }
     },
 
@@ -198,6 +227,14 @@ postalSharedWorker = {
                     }
                 }
 
+                // Apply custom callback if it is provided when a port is removed from queue
+                if (postalSharedWorker.listeners.has(S.REMOVE)) {
+                    let removals = postalSharedWorker.ports.filter(pr => pr.tries <= 0);
+                    if (removals.length>0) {
+                        postalSharedWorker._invokeRemoveCallback(removals);
+                    }
+                }
+
                 // Remove entries that don't have any tries left
                 postalSharedWorker.ports = postalSharedWorker.ports.filter(pr => pr.tries > 0);
                 break;
@@ -213,6 +250,14 @@ postalSharedWorker = {
                         data: msg
                     };
                     p.session.postMessage(notification);
+                }
+
+                // Apply custom callback if it is provided when a port is removed from queue
+                if (postalSharedWorker.listeners.has(S.REMOVE)) {
+                    let removals = postalSharedWorker.ports.filter(pr => pr.tries <= 0);
+                    if (removals.length>0) {
+                        postalSharedWorker._invokeRemoveCallback(removals);
+                    }
                 }
 
                 // Remove entries that don't have any tries left
