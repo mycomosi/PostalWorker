@@ -1,8 +1,9 @@
 
-
+import babel from 'rollup-plugin-babel';
+import babelrc from 'babelrc-rollup';
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
-import uglify from 'rollup-plugin-uglify-es';
+// import uglify from 'rollup-plugin-uglify-es';
 
 export default {
     input: 'src/es6/index.js',
@@ -23,6 +24,7 @@ export default {
             browser: true,
         }),
         commonjs(),
-        uglify()
+        babel(babelrc())
+        //uglify()
     ]
 };

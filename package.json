@@ -16,7 +16,9 @@
     "test": "npm run _transpile-test && mocha",
     "coverage": "cross-env NODE_ENV=test nyc npm test",
     "doc": "jsdoc -c jsdoc.json",
-    "demo-multipleiframes": "rollup -c ./demos/multipleiframes/demo.multipleiframes.rollup.js"
+    "demo-multipleiframes": "rollup -c ./demos/multipleiframes/demo.multipleiframes.rollup.js",
+    "demo-ie11": "rollup -c ./demos/IE11/demo.ie11.rollup.js",
+    "release": "npm run build && npm run build-worker && npm run coverage && npm run doc && npm run demo-multipleiframes && npm run demo-ie11"
   },
   "devDependencies": {
     "babel-plugin-istanbul": "^4.0.0",
@@ -43,6 +45,7 @@
   "dependencies": {
     "css-element-queries": "^0.4.0",
     "lodash-es": "^4.17.4",
+    "rollup-plugin-bundle-worker": "^0.1.0",
     "safe-json-stringify": "^1.1.0"
   },
   "repository": {
