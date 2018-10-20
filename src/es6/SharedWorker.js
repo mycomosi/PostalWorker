@@ -18,7 +18,7 @@ function uniqueNumber() {
 }
 uniqueNumber.previous = 0;
 
-postalSharedWorker = {
+self.postalSharedWorker = {
     ports: [],
     events: new Map(),
     scripts: new Set(),
@@ -31,7 +31,7 @@ postalSharedWorker = {
      * @param action
      */
     on: (msgClass, action) => {
-        postalSharedWorker.events.set(msgClass, action);
+        self.postalSharedWorker.events.set(msgClass, action);
     },
 
     /**
@@ -39,7 +39,7 @@ postalSharedWorker = {
      * @param msgClass
      */
     un: (msgClass) => {
-        postalSharedWorker.events.delete(msgClass);
+        self.postalSharedWorker.events.delete(msgClass);
     },
 
     /**
@@ -50,7 +50,7 @@ postalSharedWorker = {
      * @param target
      */
     fire: (msgClass, msg, audience, target) => {
-        postalSharedWorker._postMessenger(
+        self.postalSharedWorker._postMessenger(
             S.FIRE,
             audience,
             {
@@ -71,7 +71,7 @@ postalSharedWorker = {
      * @param callback
      */
     addListener: (event, callback) => {
-        postalSharedWorker.listeners.set(S.REMOVE, callback);
+        self.postalSharedWorker.listeners.set(S.REMOVE, callback);
     },
 
     /**
@@ -93,7 +93,7 @@ postalSharedWorker = {
                 // Responses keep the worker aware of which connections are current
                 case S.RESPONSE:
                     if (msg.status) {
-                        let lastRequest = postalSharedWorker.ports.find(prt => prt.session === event.currentTarget);
+                        let lastRequest = self.postalSharedWorker.ports.find(prt => prt.session === event.currentTarget);
                         if (lastRequest && lastRequest.tries) lastRequest.tries++;
                     }
                     break;
@@ -110,21 +110,21 @@ postalSharedWorker = {
 
                     // Broadcast to windows/tabs
                     range = msg.data.audience || S.ALL; // public, private, ALL todo: direct port messaging...
-                    postalSharedWorker._postMessenger(S.FIRE, range, msg.data, port);
+                    self.postalSharedWorker._postMessenger(S.FIRE, range, msg.data, port);
 
                     // Invoke registered event on this thread
-                    if (postalSharedWorker.events.has(msg.data.msgClass)) {
+                    if (self.postalSharedWorker.events.has(msg.data.msgClass)) {
                         let address,
                             index,
                             src;
-                        for (let p of postalSharedWorker.ports) {
+                        for (let p of self.postalSharedWorker.ports) {
                             if (p.session === event.currentTarget) {
                                 address = p.address;
-                                index = postalSharedWorker.ports.indexOf(p);
+                                index = self.postalSharedWorker.ports.indexOf(p);
                                 src = p.session;
                             }
                         }
-                        postalSharedWorker.events.get(msg.data.msgClass)(
+                        self.postalSharedWorker.events.get(msg.data.msgClass)(
                             msg.data.message,
                             {index: index, address: address, src: src}
                         );
@@ -138,14 +138,14 @@ postalSharedWorker = {
                 // todo...
                 case S.LOAD:
 
-                    if (postalSharedWorker.scripts.has(msg.data)) {
+                    if (self.postalSharedWorker.scripts.has(msg.data)) {
                         return;
                     }
                     // Wrap importScripts in try catch to report errors back to the main window
                     // Attemp to load requested library
                     try {
                         importScripts(msg.data);
-                        postalSharedWorker.scripts.add(msg.data);
+                        self.postalSharedWorker.scripts.add(msg.data);
                     }
                     catch(e) {
                         event.currentTarget.postMessage({
@@ -156,7 +156,7 @@ postalSharedWorker = {
                     break;
 
                 case S.SET_ADDRESS: {
-                    for (let p of postalSharedWorker.ports) {
+                    for (let p of self.postalSharedWorker.ports) {
                         if (p.session === event.currentTarget) {
                             p.address = msg.data;
                         }
@@ -180,7 +180,7 @@ postalSharedWorker = {
      */
     _invokeRemoveCallback: (removals) => {
         for (let r of removals) {
-            postalSharedWorker.listeners.get(S.REMOVE)(r);
+            self.postalSharedWorker.listeners.get(S.REMOVE)(r);
         }
     },
 
@@ -196,7 +196,7 @@ postalSharedWorker = {
 
         let notification,
             _port = (!!port && port.address) ?
-            postalSharedWorker.ports.find(p => {
+                self.postalSharedWorker.ports.find(p => {
                 if (p.address === port.address) {
                     return p;
                 }
@@ -215,7 +215,7 @@ postalSharedWorker = {
                 break;
 
             case S.PUBLIC:
-                for (let p of postalSharedWorker.ports) {
+                for (let p of self.postalSharedWorker.ports) {
                     p.tries--;
                     if (port !== p.session) {
                         notification = {
@@ -228,20 +228,20 @@ postalSharedWorker = {
                 }
 
                 // Apply custom callback if it is provided when a port is removed from queue
-                if (postalSharedWorker.listeners.has(S.REMOVE)) {
-                    let removals = postalSharedWorker.ports.filter(pr => pr.tries <= 0);
+                if (self.postalSharedWorker.listeners.has(S.REMOVE)) {
+                    let removals = self.postalSharedWorker.ports.filter(pr => pr.tries <= 0);
                     if (removals.length>0) {
-                        postalSharedWorker._invokeRemoveCallback(removals);
+                        self.postalSharedWorker._invokeRemoveCallback(removals);
                     }
                 }
 
                 // Remove entries that don't have any tries left
-                postalSharedWorker.ports = postalSharedWorker.ports.filter(pr => pr.tries > 0);
+                self.postalSharedWorker.ports = self.postalSharedWorker.ports.filter(pr => pr.tries > 0);
                 break;
 
             default: // ALL
                 // Fallback to older version support in case of no scope being defined
-                for (let p of postalSharedWorker.ports) {
+                for (let p of self.postalSharedWorker.ports) {
                     p.tries--;
                     notification = {
                         // If buffer drops,
@@ -253,15 +253,15 @@ postalSharedWorker = {
                 }
 
                 // Apply custom callback if it is provided when a port is removed from queue
-                if (postalSharedWorker.listeners.has(S.REMOVE)) {
-                    let removals = postalSharedWorker.ports.filter(pr => pr.tries <= 0);
+                if (self.postalSharedWorker.listeners.has(S.REMOVE)) {
+                    let removals = self.postalSharedWorker.ports.filter(pr => pr.tries <= 0);
                     if (removals.length>0) {
-                        postalSharedWorker._invokeRemoveCallback(removals);
+                        self.postalSharedWorker._invokeRemoveCallback(removals);
                     }
                 }
 
                 // Remove entries that don't have any tries left
-                postalSharedWorker.ports = postalSharedWorker.ports.filter(pr => pr.tries > 0);
+                self.postalSharedWorker.ports = self.postalSharedWorker.ports.filter(pr => pr.tries > 0);
         }
 
     }
@@ -281,10 +281,10 @@ onconnect = (event) => {
             session: src,
             tries: 10
         };
-    postalSharedWorker.ports.push(port);
+    self.postalSharedWorker.ports.push(port);
     src.start();
     src.addEventListener(S.MESSAGE, (event) => {
-        postalSharedWorker._processMessage(event, src, postalSharedWorker.ports);
+        self.postalSharedWorker._processMessage(event, src, self.postalSharedWorker.ports);
     });
     let startup = {
         type: S.SET_ADDRESS,

@@ -2,7 +2,7 @@
 
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
-//import uglify from 'rollup-plugin-uglify-es';
+import uglify from 'rollup-plugin-uglify-es';
 
 export default {
     input: 'src/es6/SharedWorker.js',
@@ -10,7 +10,7 @@ export default {
     output: {
         file: 'dist/PostalSharedWorker.js',
         // file: '../entourage/demo/lib/PostalSharedWorker.js',
-        format: 'es',
+        format: 'iife',
         sourcemap: false,
         onwarn: (message) => {
             if (/Use of eval/.test(message)) return;
@@ -23,7 +23,7 @@ export default {
             main: true,
             browser: true,
         }),
-        commonjs()//,
-        //uglify()
+        commonjs(),
+        uglify()
     ]
 };

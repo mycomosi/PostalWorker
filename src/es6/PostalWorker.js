@@ -82,10 +82,10 @@ export class PostalWorker {
         sh = Boolean(sh);
         if (sh) {
             _worker = this._startSharedWorker();
-            // if (!_worker) {
-            //     // Fallback on failure
-            //     // _worker = this._startDedicatedWorker();
-            // }
+            if (!_worker) {
+                // Fallback on failure
+                _worker = this._startDedicatedWorker();
+            }
         }
 
         // Use plain web worker
@@ -155,7 +155,7 @@ export class PostalWorker {
      * @private
      */
     _startDedicatedWorker() {
-        window.console.info('_startDedicatedWorker (not complete)');
+        window.console.info('_startDedicatedWorker... (not complete)');
     }
 
     /**
@@ -298,7 +298,9 @@ export class PostalWorker {
             type: S.UN,
             data: msgClass
         });
-        _worker.port.postMessage(msg_);
+        if (_worker) {
+            _worker.port.postMessage(msg_);
+        }
 
         // Update registry
         _events.delete(msgClass);
@@ -357,7 +359,10 @@ export class PostalWorker {
             rootSubscriber = this._getSubscriber(subscriber);
 
             // If subscriber doesn't exist
-            if (!_subscriptions.has(rootSubscriber)) {
+            console.warn(_subscriptions.has(rootSubscriber));
+            if (_subscriptions.has(rootSubscriber) === false) {
+
+                console.info('got past the if');
 
                 // It also cannot be the parent window as that is already taken
                 if (_parentWindow &&
