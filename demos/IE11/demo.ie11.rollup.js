@@ -2,6 +2,8 @@
 import eslint from 'rollup-plugin-eslint';
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
+import babel from 'rollup-plugin-babel';
+import babelrc from 'babelrc-rollup';
 
 export default {
     input: './demos/IE11/demo-ie11.js',
@@ -13,6 +15,7 @@ export default {
     plugins: [
         resolve(),
         commonjs(),
-        eslint()
+        eslint(),
+        babel(babelrc())
     ]
 };

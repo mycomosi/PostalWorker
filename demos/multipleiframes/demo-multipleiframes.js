@@ -8,6 +8,7 @@ const DEMO = 'demo',
     IFRAME_MSG = 'iframe-msg',
     PARENT_MSG = 'parent-msg',
     CURRENT_ID = 'current-id';
+const view = document.querySelector(`#${DEMO}`);
 
 /**
  * Makes the ids and also handles assigning the window # to hashes

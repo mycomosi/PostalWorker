@@ -1,4 +1,5 @@
 
+const view = document.querySelector('#demo');
 {
-    window.console.info('Loading IE11 Demo');
+
 }
