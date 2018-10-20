@@ -4,6 +4,15 @@ A JavaScript WebWorker & postMessage library that connects UI elements, Web Work
 Installation:
 npm install -save postalworker
 
+# npm Commands:
+npm run build - Runs rollup.js to combine all the modules and dependencies and output the primary library script PostalWorker.js
+npm run build-worker - Builds the worker libraries (SharedWorker and WebWorker scripts are run separately from main library)
+npm run test - Run unit tests
+npm run coverage - Generate code coverage report
+npm run doc - Generate documentation
+npm run demos - Generate demo pages
+npm run relase - Build, generate, run unit tests (basicaly - DO EVERYTHING)
+
 Usage examples
 
 ```javascript
