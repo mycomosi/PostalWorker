@@ -16,10 +16,10 @@
     "test": "npm run _transpile-test && mocha",
     "coverage": "cross-env NODE_ENV=test nyc npm test",
     "doc": "jsdoc -c jsdoc.json",
-    "demos": "_demo-multipleiframes && _demo-ie11",
+    "demos": "npm run _demo-multipleiframes && npm run _demo-ie11",
     "_demo-multipleiframes": "rollup -c ./demos/multipleiframes/demo.multipleiframes.rollup.js",
     "_demo-ie11": "rollup -c ./demos/IE11/demo.ie11.rollup.js",
-    "release": "npm run build && npm run build-worker && npm run coverage && npm run doc && npm run demo-multipleiframes && npm run demo-ie11"
+    "release": "npm run build && npm run build-worker && npm run coverage && npm run doc && npm run demos"
   },
   "devDependencies": {
     "babel-plugin-istanbul": "^4.0.0",

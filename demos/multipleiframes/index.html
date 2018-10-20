@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <title>Demo - Multiple Iframes Support</title>
     <script src="../../dist/PostalWorker.min.js?PostalRoute=../../dist/"></script>
+    <style>
+        #demo {
+            padding-bottom: 25px;
+        }
+        #demoView {
+            max-height: 400px;
+            overflow: auto;
+        }
+    </style>
 </head>
 <body>
 <a href="../../">&lt;&lt; Back</a>
@@ -13,6 +22,9 @@
 
 <div id="demo"></div>
 
-<script src="../../dist/demo.multipleiframes.js"></script>
+
+
+<div id="demoView"></div>
+<script src="../../dist/demo.multipleiframes.js" defer></script>
 </body>
 </html>
