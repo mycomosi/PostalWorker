@@ -8,7 +8,8 @@ const DEMO = 'demo',
     IFRAME_MSG = 'iframe-msg',
     PARENT_MSG = 'parent-msg',
     CURRENT_ID = 'current-id';
-const view = document.querySelector(`#${DEMO}`);
+
+const demoView = document.querySelector(`#${DEMO}View`);
 
 /**
  * Makes the ids and also handles assigning the window # to hashes
@@ -32,6 +33,11 @@ const makeId = () => {
         myid = window.location.hash;
         return window.location.hash;
     }
+},
+    display = (msg) => {
+    let add = document.createElement('div');
+    add.innerHTML = msg;
+    demoView.appendChild(add);
 };
 
 // Create closure and split behaviors based on whether window is parent or child
@@ -43,7 +49,7 @@ const makeId = () => {
             id = makeId();
         postal.backFire(IFRAME_MSG, `Iframe (${id}) sending message to parent window`);
         postal.crossOn(PARENT_MSG, (msg) => {
-            window.console.info(`[Message from iframe (${myid}): ${msg}]`);
+            postal.backFire(IFRAME_MSG, `[Message from iframe (${myid}): ${msg}]`);
         }, false);
     }
     // Otherwise, this is the parent page...
@@ -51,7 +57,7 @@ const makeId = () => {
         let postal = window.PostalWorker(),
             demo = document.querySelector(`#${DEMO}`);
         postal.crossOn(IFRAME_MSG, (msg) => {
-            window.console.info(`- Parent window: ${msg}`);
+            display(`- ${msg}`);
         }, false);
 
         setTimeout(() => {
