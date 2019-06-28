@@ -182,7 +182,15 @@ export class PostalWorker {
         if (_config.PostalRoute) {
             return _config.PostalRoute;
         }
+        // If PostalRoute is defined in the url, parse it and use it
+        else if (script[0].src.match('PostalRoute')) {
+            let query = script[0].src.match(/PostalRoute=.*&/) ?
+                script[0].src.match(/PostalRoute=.*&/)[0].replace('&', '') :
+                script[0].src.match(/PostalRoute=.*$/)[0];
+            return query.match('PostalRoute=.*$')[0].replace('PostalRoute=', '');
+        }
         else {
+            // Otherwise, look next to where the PostalWorker script is located
             return (script.length === 1) ? script[0].src
 
                 // minified version
