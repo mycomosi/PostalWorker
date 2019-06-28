@@ -1,7 +1,7 @@
 /**
  * PostalWorker Post Messenger Event Bus Module (ES6)
  * @description: Listen for and broadcast out messages by "message class" between windows/tabs & web workers using the postMessage API
- * @Authors: Russ Stratfull & Francois Wauquier - 2017-2018
+ * @Authors: Russ Stratfull & Francois Wauquier - 2017-2019
  */
 
 import * as S from './strings';
