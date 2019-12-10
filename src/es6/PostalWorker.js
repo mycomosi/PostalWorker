@@ -445,24 +445,25 @@ export class PostalWorker {
      */
     unCross(msgClass, subscriber) {
 
-        // Get root subscriber
-        let rootSubscriber = this._getSubscriber(subscriber);
-
-        // Remove from subscriptions
-        _subscriptions.delete(rootSubscriber);
-
-        // Remove from cross events registry
+		// Remove from cross events registry
         _crossEvents.delete(msgClass);
+		if(subscriber) {
+			// Get root subscriber
+			let rootSubscriber = this._getSubscriber(subscriber);
 
-        // If a reference to a window exists
-        if (_windows.has(rootSubscriber)) {
+			// Remove from subscriptions 
+			_subscriptions.delete(rootSubscriber);
 
-            // Close it
-            _windows.get(rootSubscriber).close();
+			// If a reference to a window exists
+			if (_windows.has(rootSubscriber)) {
 
-            // Then remove from registry
-            _windows.delete(rootSubscriber);
-        }
+				// Close it
+				_windows.get(rootSubscriber).close();
+
+				// Then remove from registry
+				_windows.delete(rootSubscriber);
+			}
+		}
         return this;
     }
 
