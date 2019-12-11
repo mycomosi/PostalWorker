@@ -1,7 +1,7 @@
 /**
  * PostalWorker Post Messenger Event Bus Module (ES6)
  * @description: Listen for and broadcast out messages by "message class" between windows/tabs & web workers using the postMessage API
- * @Authors: Russ Stratfull & Francois Wauquier - 2017-2019
+ * @Authors: Russ Stratfull, Sakshi Dheer, & Francois Wauquier - 2017-2019
  */
 
 import * as S from './strings';
@@ -370,8 +370,6 @@ export class PostalWorker {
             console.warn(_subscriptions.has(rootSubscriber));
             if (_subscriptions.has(rootSubscriber) === false) {
 
-                console.info('got past the if');
-
                 // It also cannot be the parent window as that is already taken
                 if (_parentWindow &&
                     rootSubscriber !== _parentWindow) {
@@ -451,7 +449,7 @@ export class PostalWorker {
 			// Get root subscriber
 			let rootSubscriber = this._getSubscriber(subscriber);
 
-			// Remove from subscriptions 
+			// Remove from subscriptions
 			_subscriptions.delete(rootSubscriber);
 
 			// If a reference to a window exists
